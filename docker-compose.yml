@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  main:
+    container_name: main
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "5200:5200"
+      - "9229:9229"
+    command: npm run start:dev
+    depends_on:
+      - postgres
+    restart: always
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+volumes:
+  pgdata:
